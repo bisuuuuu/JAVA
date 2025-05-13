@@ -1,0 +1,57 @@
+   package com.example.controller;
+
+   import com.example.model.Product;
+   import com.example.service.ProductService;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.stereotype.Controller;
+   import org.springframework.ui.Model;
+   import org.springframework.web.bind.annotation.*;
+
+   import java.util.List;
+
+   @Controller
+   @RequestMapping("/products")
+   public class ProductController {
+
+       @Autowired
+       private ProductService productService;
+
+       @GetMapping
+       public String listProducts(Model model) {
+           List<Product> products = productService.getAllProducts();
+           model.addAttribute("products", products);
+           return "productList";
+       }
+
+       @GetMapping("/new")
+       public String showForm(Model model) {
+           model.addAttribute("product", new Product());
+           return "productForm";
+       }
+
+       @PostMapping
+       public String saveProduct(@ModelAttribute Product product) {
+           productService.saveProduct(product);
+           return "redirect:/products";
+       }
+
+       @GetMapping("/{id}/edit")
+       public String editProduct(@PathVariable int id, Model model) {
+           Product product = productService.getProductById(id);
+           model.addAttribute("product", product);
+           return "productForm";
+       }
+
+       @PostMapping("/{id}")
+       public String updateProduct(@PathVariable int id, @ModelAttribute Product product) {
+           productService.updateProduct(id, product);
+           return "redirect:/products";
+       }
+
+       @GetMapping("/{id}/delete")
+       public String deleteProduct(@PathVariable int id) {
+           productService.deleteProduct(id);
+           return "redirect:/products";
+       }
+   }
+   
